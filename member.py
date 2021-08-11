@@ -3,15 +3,18 @@ from tkinter import *
 from tkinter import messagebox
 
 
+## 두 함수에서 쓰이는 변수들을 전역변수로 미리 선언
+con, cur = None, None
+sql=""
+
+
 ## 함수 선언부
 def insertData() :
-    con, cur = None, None
-    data1, data2, data3, data4 = "", "", "", ""
-    sql=""
 
     ## 데이터베이스 연결 설정
-    
-
+    con = pymysql.connect(host='127.0.0.1', user='root', password='1234',db='memberdb', charset='utf8')
+    cur = con.cursor()
+    data1, data2, data3, data4 = "", "", "", ""
     data1 = edt1.get();    data2 = edt2.get();    data3 = edt3.get();    data4 = edt4.get()
     try :
         sql = "INSERT INTO usertable VALUES('" + data1 + "','" + data2 + "','" + data3 + "'," + data4 + ")"
@@ -20,14 +23,20 @@ def insertData() :
         messagebox.showerror('오류', '데이터 입력 오류가 발생함')
     else :
         messagebox.showinfo('성공', '데이터 입력 성공')
-    conn.commit()
-    conn.close()
+    
+    con.commit()
+    con.close()
 
 def selectData() :
     strData1, strData2, strData3, strData4  = [], [], [], []
-    conn = pymysql.connect(host='127.0.0.1', user='root', password='1234', db='memberDB', charset='utf8')
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM userTable")
+    
+    ## 데이터베이스 연결 설정
+    con = pymysql.connect(host='127.0.0.1', user='root', password='1234',db='memberdb', charset='utf8')
+    cur = con.cursor()
+    
+    sql = "SELECT * FROM userTable" ## sql 변수에 쿼리문 대입
+    cur.execute(sql) 
+    
     strData1.append("사용자ID");      strData2.append("사용자이름")
     strData3.append("이메일");         strData4.append("출생연도")
     strData1.append("-----------");    strData2.append("-----------")
@@ -44,7 +53,7 @@ def selectData() :
     for item1, item2, item3, item4 in zip(strData1, strData2, strData3, strData4 ):
         listData1.insert(END, item1);        listData2.insert(END, item2)
         listData3.insert(END, item3);        listData4.insert(END, item4)
-    conn.close()    
+    con.close()    
 
 ## 메인 코드부
 window = Tk()
